@@ -1,6 +1,8 @@
 import {useState} from 'react'
 import {useQuery} from '@tanstack/react-query'
 import Modal from 'react-modal'
+import {Pagination} from 'antd'
+import 'antd/dist/antd.css'
 
 import './App.css'
 const customStyles = {
@@ -26,10 +28,13 @@ function App() {
     return data
   }
 
-  const {isLoading, isError, error, data, isFetching, isPreviousData} =
-    useQuery(['characters', page], () => fetchProjects(page), {
+  const {isLoading, isError, error, data, isFetching} = useQuery(
+    ['characters', page],
+    () => fetchProjects(page),
+    {
       keepPreviousData: true,
-    })
+    },
+  )
 
   const handleOpenModal = id => {
     setSelectedUser(data.results.find(user => user.id === id))
@@ -91,26 +96,16 @@ function App() {
       </div>
       <div className="pagination">
         <div>
-          <button
-            onClick={() => setPage(old => Math.max(old - 1, 0))}
-            disabled={page === 1}
-            className="pagination-buttons"
-          >
-            Prev
-          </button>
-          <span>Page {page}</span>
-          <button
-            onClick={() => {
-              if (!isPreviousData && data.info.next) {
-                setPage(old => old + 1)
-              }
-            }}
-            // Disable the Next Page button until we know a next page is available
-            disabled={isPreviousData || !data?.info.next}
-            className="pagination-buttons"
-          >
-            Next
-          </button>
+          <Pagination
+            current={page}
+            onChange={page => setPage(page)}
+            pageSize={20}
+            showSizeChanger={false}
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
+            total={data?.info.count}
+          />
         </div>
         {isFetching ? <span> Loading...</span> : null}{' '}
       </div>
