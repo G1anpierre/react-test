@@ -41,3 +41,7 @@
   border: none;
   margin: 10px;
 }
+
+.pagination-buttons:disabled {
+  opacity: 0.5;
+}

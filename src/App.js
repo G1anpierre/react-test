@@ -1,4 +1,5 @@
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
+import {useQuery} from '@tanstack/react-query'
 import Modal from 'react-modal'
 
 import './App.css'
@@ -14,37 +15,28 @@ const customStyles = {
 }
 
 function App() {
-  const [data, setData] = useState([])
-  const [selectedUser, setSelectedUser] = useState(null)
-  const [pagination, setPagination] = useState(1)
+  const [page, setPage] = useState(1)
+  const [selectedUser, setSelectedUser] = useState(false)
 
-  useEffect(() => {
-    const getData = async () => {
-      console.log('pagination', pagination)
-      const response = await fetch(
-        `https://rickandmortyapi.com/api/character?page=${pagination}`,
-      )
-      const json = await response.json()
-      setData(json.results)
-    }
-    getData()
-  }, [pagination])
+  const fetchProjects = async (page = 1) => {
+    const response = await fetch(
+      `https://rickandmortyapi.com/api/character?page=${page}`,
+    )
+    const data = await response.json()
+    return data
+  }
+
+  const {isLoading, isError, error, data, isFetching, isPreviousData} =
+    useQuery(['characters', page], () => fetchProjects(page), {
+      keepPreviousData: true,
+    })
 
   const handleOpenModal = id => {
-    console.log(id)
-    setSelectedUser(data.find(user => user.id === id))
+    setSelectedUser(data.results.find(user => user.id === id))
   }
 
   const handleCloseModal = () => {
-    setSelectedUser(null)
-  }
-
-  const handleNext = () => {
-    setPagination(pagination + 1)
-  }
-
-  const handlePrevious = () => {
-    setPagination(pagination - 1)
+    setSelectedUser(false)
   }
 
   return (
@@ -53,20 +45,32 @@ function App() {
         <header className="header">
           <h1>Rich and Morty</h1>
         </header>
-        <div className="container">
-          {data.map(item => (
-            <div
-              key={item.id}
-              className="card"
-              onClick={() => handleOpenModal(item.id)}
-            >
-              <img src={item.image} alt={item.name} className="card-image" />
-              <p>{item.name}</p>
+        <div>
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : isError ? (
+            <div>Error: {error.message}</div>
+          ) : (
+            <div className="container">
+              {data?.results.map(item => (
+                <div
+                  key={item.id}
+                  className="card"
+                  onClick={() => handleOpenModal(item.id)}
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="card-image"
+                  />
+                  <p>{item.name}</p>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
         <Modal
-          isOpen={selectedUser}
+          isOpen={!!selectedUser}
           onRequestClose={handleCloseModal}
           style={customStyles}
           contentLabel="Example Modal"
@@ -87,13 +91,28 @@ function App() {
       </div>
       <div className="pagination">
         <div>
-          <button onClick={handlePrevious} className="pagination-buttons">
+          <button
+            onClick={() => setPage(old => Math.max(old - 1, 0))}
+            disabled={page === 1}
+            className="pagination-buttons"
+          >
             Prev
           </button>
-          <button onClick={handleNext} className="pagination-buttons">
+          <span>Page {page}</span>
+          <button
+            onClick={() => {
+              if (!isPreviousData && data.info.next) {
+                setPage(old => old + 1)
+              }
+            }}
+            // Disable the Next Page button until we know a next page is available
+            disabled={isPreviousData || !data?.info.next}
+            className="pagination-buttons"
+          >
             Next
           </button>
         </div>
+        {isFetching ? <span> Loading...</span> : null}{' '}
       </div>
     </div>
   )
