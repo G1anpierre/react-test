@@ -13,6 +13,7 @@ const customStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    backgroundColor: 'wheat',
   },
 }
 
@@ -48,7 +49,7 @@ function App() {
     <div className="App">
       <div className="App-container">
         <header className="header">
-          <h1>Rich and Morty</h1>
+          <h1>Rick and Morty</h1>
         </header>
         <div>
           {isLoading ? (
@@ -68,7 +69,7 @@ function App() {
                     alt={item.name}
                     className="card-image"
                   />
-                  <p>{item.name}</p>
+                  <p className="card-name">{item.name}</p>
                 </div>
               ))}
             </div>
@@ -78,10 +79,13 @@ function App() {
           isOpen={!!selectedUser}
           onRequestClose={handleCloseModal}
           style={customStyles}
+          ariaHideApp={false}
           contentLabel="Example Modal"
         >
           <div className="close-button-container">
-            <button onClick={handleCloseModal}>X</button>
+            <button onClick={handleCloseModal} className="close-button">
+              X
+            </button>
           </div>
           {selectedUser && (
             <div>

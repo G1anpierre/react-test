@@ -4,6 +4,11 @@
   margin-bottom: 40px;
 }
 
+.App {
+  background-color: #d9afd9;
+  background-image: linear-gradient(0deg, #d9afd9 0%, #97d9e1 100%);
+}
+
 .App-container {
   padding: 15px;
   max-width: 1200px;
@@ -16,6 +21,34 @@
   gap: 10px;
 }
 
+.card {
+  padding: 10px;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  display: grid;
+  grid-template-rows: auto 50px;
+  border-radius: 7px;
+  background-color: wheat;
+}
+
+.card-name {
+  font-size: 20px;
+  font-weight: 700;
+
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.card:hover {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  transition: 0.5s;
+  transform: scale(1.2);
+}
+
 .card-image {
   width: 100%;
   height: auto;
@@ -24,6 +57,18 @@
 .close-button-container {
   display: flex;
   justify-content: flex-end;
+}
+
+.close-button {
+  border: none;
+  background: none;
+  opacity: 0.6;
+}
+
+.close-button:hover {
+  opacity: 1;
+  transition: 0.5s;
+  transform: rotate(180deg);
 }
 
 .pagination {
